@@ -1,0 +1,75 @@
+<html>
+  <head>
+    <script>
+      window.onload = function() {
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        var audio = null;
+        
+        canvas.addEventListener("mouseup", function() {
+          audio = new Audio();
+          audio.src = "../assets/Wind_Blowing_Through_Trees_Sound_Effect.mp3";
+          audio.crossOrigin = "anonymous";
+          audio.autoplay = true;
+  
+          var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          var analyser = audioContext.createAnalyser();
+          var source = audioContext.createMediaElementSource(audio);
+          source.connect(analyser);
+          analyser.connect(audioContext.destination);
+  
+          var frequencyData = new Uint8Array(analyser.frequencyBinCount);
+  
+          function renderFrame() {
+            requestAnimationFrame(renderFrame);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+            analyser.getByteFrequencyData(frequencyData);
+  
+            var x = canvas.width / 2;
+            var y = canvas.height * 0.8;
+            var trunkWidth = 20;
+            var trunkHeight = 80;
+  
+            ctx.fillStyle = "brown";
+            ctx.fillRect(x - trunkWidth / 2, y, trunkWidth, -trunkHeight);
+  
+            var branches = 8;
+            var branchWidth = trunkWidth / 2;
+            var branchHeight = trunkHeight / 2;
+  
+            for (var i = 0; i < branches; i++) {
+              ctx.fillStyle = "brown";
+              ctx.fillRect(
+                x - branchWidth / 2 + (i - branches / 2) * branchWidth,
+                y - trunkHeight,
+                branchWidth,
+                -branchHeight
+              );
+            }
+  
+            var leaves = 50;
+            var leafRadius = 10;
+  
+            for (var i = 0; i < leaves; i++) {
+              var angle = i / leaves * Math.PI * 2;
+              var offset = frequencyData[i % frequencyData.length] / 256;
+  
+              var xPos = x + Math.sin(angle) * (branchHeight + offset * 20);
+              var yPos = y - trunkHeight - branchHeight + Math.cos(angle) * (offset * 20);
+  
+              ctx.fillStyle = "green";
+              ctx.beginPath();
+              ctx.arc(xPos, yPos, leafRadius, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+          renderFrame();
+        });
+      };
+    </script>
+  </head>
+  <body>
+    <canvas id="canvas" width="500" height="500"></canvas>
+  </body>
+</html>

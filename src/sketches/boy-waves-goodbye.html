@@ -1,0 +1,52 @@
+<html>
+  <body>
+    <svg width="400" height="360">
+
+      <rect x="0" y="0" width="400" height="360" fill="lightblue"/>
+      
+      <!--Boy-->
+      <circle id="boy" cx="100" cy="100" r="50" fill="red"/>
+
+      <!--Mother-->
+      <circle id="mum" cx="300" cy="100" r="50" fill="green"/>
+
+      <!--Dialog balloons-->
+        <g>
+            <rect x="50" y="40" width="50" height="50" fill="yellow" />
+            <text id="boy-dialog-text" x="55" y="65" fill="white" />
+        </g>
+
+        <g>
+            <rect x="250" y="40" width="50" height="50" fill="pink" />
+            <text id="mum-dialog-text" x="255" y="65" fill="white" />
+        </g>
+
+    </svg>
+
+    <script>
+      // position & movement variables 
+      var posX = 100;
+      var moveX = -10;
+      var counter = 1;
+      
+      // animate movement with setInterval method
+      var moveAnimation = window.setInterval(function(){
+        document.getElementById('boy').setAttribute('cx', posX);
+
+        posX += moveX;
+    
+          // add dialog upon reaching certain points 
+        if (counter === 1){
+            document.getElementById('boy-dialog-text')
+                .textContent = "Goodbye Mom";
+        } else if (counter === 4){
+            document.getElementById('mum-dialog-text')
+                .textContent = "Bye, see you tonight!";
+        }
+
+        counter++ ;
+      }, 150);
+      
+    </script>
+  </body>
+</html>

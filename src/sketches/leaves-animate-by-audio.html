@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <script>
+      window.onload = function() {
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        var audio = null;
+        
+        canvas.addEventListener("mouseup", function() {
+          audio = new Audio();
+          audio.src = "../assets/Wind_Blowing_Through_Trees_Sound_Effect.mp3";
+          audio.autoplay = true;
+  
+          var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          var analyser = audioContext.createAnalyser();
+          var source = audioContext.createMediaElementSource(audio);
+          source.connect(analyser);
+          analyser.connect(audioContext.destination);
+  
+          var frequencyData = new Uint8Array(analyser.frequencyBinCount);
+  
+          function renderFrame() {
+            requestAnimationFrame(renderFrame);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgb(200, 200, 200)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+            analyser.getByteFrequencyData(frequencyData);
+  
+            for (var i = 0; i < frequencyData.length; i++) {
+              var value = frequencyData[i];
+              var percent = value / 256;
+              var height = canvas.height * percent;
+              var offset = canvas.height - height - 1;
+              var barWidth = canvas.width / frequencyData.length;
+              var hue = i / frequencyData.length * 360;
+              ctx.fillStyle = "hsl(" + hue + ", 100%, 50%)";
+              ctx.fillRect(i * barWidth, offset, barWidth, height);
+            }
+          }
+          renderFrame();
+        });
+      };
+    </script>
+  </head>
+  <body>
+    <canvas id="canvas" width="500" height="500"></canvas>
+  </body>
+</html>
